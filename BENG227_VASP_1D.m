@@ -16,7 +16,7 @@ T_dim = 500;
 N_r = round(R_dim / dr) + 2;
 N_t = round(T_dim / dt);
 %% CONSTANTS
-R = 0.2;
+R = 0.28;
 delta = 0.9;
 epsilon = 0.1;
 K = 1;
@@ -29,11 +29,19 @@ B0_c = 4;
 theta = 0.05;
 noise = 0.01;
 %% INITIAL CONDITIONS
-B = 2*B0_c * ones(N_r,N_t);
+B = 0 * ones(N_r,N_t);
 A = 0 * ones(N_r,N_t);
 M = 0 * ones(N_r,N_t);
 V = 0 * ones(N_r,N_t);
-B(1:5,1) = 20 * B0_c;
+
+% Gradient I.C.
+for i = 1:1:N_r
+   B(i,1) = 20 - i/N_r * 20;
+   A(i,1) = 20 - i/N_r * 20;
+end
+% B(1:100,1) = 10;
+% A(1:100,1) = 10;
+% M(1:100,1) = 0;
 %% DEFINE ddr matrices; implicitly have Neumann programmed in
 
 ddr = zeros(N_r,N_r);
@@ -106,3 +114,6 @@ imagesc(M(:,1:N_t-1))
 colorbar
 figure
 plot(tvec,B(10,:))
+figure
+V_scale = V ./ max(max(V));
+imshow(V)
