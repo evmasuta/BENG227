@@ -11,12 +11,12 @@ dx = dr;
 dt = 0.01;
 % limits
 R_dim = 40;
-T_dim = 200;
+T_dim = 500;
 % N, +2 denotes phantom points to help with Neumann B.C.'s
 N_r = round(R_dim / dr) + 2;
 N_t = round(T_dim / dt);
 %% CONSTANTS
-R = 0.3;
+R = 0.2;
 delta = 0.9;
 epsilon = 0.1;
 K = 1;
@@ -27,13 +27,13 @@ eta_A = 0.2;
 E = 0.1;
 B0_c = 4;
 theta = 0.05;
-noise = 0;
+noise = 0.01;
 %% INITIAL CONDITIONS
-B = 0 * ones(N_r,N_t);
+B = 2*B0_c * ones(N_r,N_t);
 A = 0 * ones(N_r,N_t);
 M = 0 * ones(N_r,N_t);
 V = 0 * ones(N_r,N_t);
-% B(1:5,1) = 20 * B0_c;
+B(1:5,1) = 20 * B0_c;
 %% DEFINE ddr matrices; implicitly have Neumann programmed in
 
 ddr = zeros(N_r,N_r);
@@ -61,12 +61,15 @@ for t=1:1:N_t - 1
     % G is kinda weird, consider changing if fails
     G = ones(N_r,1) + (A(:,t) .* B(:,t)) ./ (ones(N_r,1) + M(:,t) + K * B(:,t));
     %% CALCULATE B
+    % No flux BC
+    B(1,t) = B(3,t);
+    B(N_r,t) = B(N_r - 2,t);
     % No need to transpose since natively row vector
     dBdx = ddr * B(:,t);
     gdBdx = 1./G .* dBdx;
     diffusion_B = epsilon^2 * ddr * gdBdx;
     accumulation_B = ones(N_r,1) + eta_B * V(:,t);
-    loss_B = -B(:,t) ./ (ones(N_r,1) + G);
+    loss_B = -B(:,t) ./ (G);
     noise_B = 0.1 * 2 * (rand(N_r,1) - ones(N_r,1));
     B(:,t+1) = B(:,t) + dt/epsilon * (diffusion_B + accumulation_B + loss_B + noise_B);
 
@@ -101,3 +104,5 @@ colorbar
 figure
 imagesc(M(:,1:N_t-1))
 colorbar
+figure
+plot(tvec,B(10,:))
