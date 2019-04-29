@@ -1,8 +1,8 @@
 %% BENG 227 MIDTERM PROJECT Evan Masutani
 %% HOUSEKEEPING
-clear all
-close all
-clc
+clear all;
+close all;
+clc;
 %% SIMULATION RUN PARAMETERS
 % step sizes
 dr = 0.1;
@@ -10,11 +10,12 @@ dr = 0.1;
 dx = dr;
 dt = 0.01;
 % limits
-R_dim = 40;
+R_dim = 40; %microns
 T_dim = 500;
 % N, +2 denotes phantom points to help with Neumann B.C.'s
 N_r = round(R_dim / dr) + 2;
 N_t = round(T_dim / dt);
+tvec = 1:1:N_t;
 %% CONSTANTS
 R = 0.28;
 delta = 0.9;
@@ -91,27 +92,79 @@ for t=1:1:N_t - 1
     M(:,t+1) = M(:,t) + dt * (accumulation_M + loss_M);
 end
 
-tvec = 1:1:N_t;
+%% Normalize Results
+V_norm = V/max(max(V));
+B_norm = B/max(max(B));
+A_norm = A/max(max(A));
+M_norm = M/max(max(M));
+rad_coor = round(size(V_norm,1)/2);
+
+%% Plot Results
 % figure
 % plot(tvec,M(10,:))
 % figure
 % plot(tvec,A(10,:))
 % figure
 % plot(tvec,B(10,:))
+
+% Movie of Moving Leading Edge
+dista=zeros(size(V_norm,1),1);
+% dista=([dista diff(V_norm,1,2)]);
+for ii=[1:1:N_t]
+    if ii > 1
+        dista(:,ii) = dista(:,ii-1) + V_norm(:,ii-1) * dt;
+    end
+end
+cell(:,1)=zeros(size(dista,1),1);
+cell(:,2)=[1:size(dista,1)]';
+figure
+video1 = VideoWriter('lamellopodia','MPEG-4');
+open(video1);
+for frame=1:25:size(dista,2)
+%     cell(:,1)=cell(:,1)-sum(dista(:,frame:frame+24),2)/(dt*25);
+%     plot(cell(:,1),cell(:,2),'k-');
+    plot(dista(:,frame),cell(:,2),'k-')
+    title('Leading Edge of Cell Simulated Movement');
+    xlim([0 100]);
+    ylim([0 350]);
+    vidframe = getframe(gcf);
+    writeVideo(video1,vidframe);
+end
+close(video1);
 figure
 imagesc(V(:,1:N_t-1))
+xlabel('Time (10^{th} of a Second)');
+ylabel('Radial Position (10^{th} of a Micron)');
+title('Non-Dimensionalized Normalized Velocity Kymograph');
 colorbar
 figure
 imagesc(B(:,1:N_t-1))
+xlabel('Time (10^{th} of a Second)');
+ylabel('Radial Position (10^{th} of a Micron)');
+title('Non-Dimensionalized Barbed End Density Kymograph');
 colorbar
 % figure
 % plot(tvec,V(10,:));
 figure
 imagesc(A(:,1:N_t-1))
+xlabel('Time (10^{th} of a Second)');
+ylabel('Radial Position (10^{th} of a Micron)');
+title('Non-Dimensionalized VASP Concentration Kymograph');
 colorbar
 figure
 imagesc(M(:,1:N_t-1))
+xlabel('Time (10^{th} of a Second)');
+ylabel('Radial Position (10^{th} of a Micron)');
+title('Non-Dimensionalized Mature Adhesions Kymograph');
 colorbar
 figure
-plot(tvec,B(10,:))
-figure
+plot(tvec,V_norm(rad_coor,:),tvec,B_norm(rad_coor,:),...
+    tvec,A_norm(rad_coor,:),tvec,M_norm(rad_coor,:),'LineWidth',3)
+legend('V','B','A','M');
+xlabel('Time (10^{th} of a Second)');
+ylabel('Normalized Quantity');
+title(['Non-Dimensionalized Quantities at a Radial Coordinate of ',...
+    num2str(rad_coor/10),' Microns']);
+% figure
+% V_scale = V ./ max(max(V));
+% imshow(V)
