@@ -43,27 +43,29 @@ V = zeros(N_r,N_t);
 
 % INITIAL CONDITIONS SENT BY AUTHORS
 % DON'T YOU DARE TOUCH THESE I.C.s FOR BAM OR I'LL BAM YOU.
+% SETS BASAL OSCILLATIONS, CAN OVERWRITE DOWNSTREAM
 B(:,1) = BMaxODE * ones(N_r,1);
 A(:,1) = AMaxODE * ones(N_r,1);
 M(:,1) = zeros(N_r,1);
 
-N_IC = 589;
+
 % B(1:N_IC,1) = BMinODE * ones(N_IC,1);
 % A(1:N_IC,1) = AMinODE * ones(N_IC,1);
 % M(1:N_IC,1) = MMaxODE * ones(N_IC,1);
 
-% A(N_IC:N_r,1) = AMaxODE;
-% B(N_IC:N_r,1) = 0.9 * BMaxODE + B(N_IC:N_r,1);
-% M(N_IC:N_r,1) = MMinODE;
 
 % % Gradient I.C.
-% for i = 1:1:N_r
-%    B(i,1) = 20 - i/N_r * 20;
-%    A(i,1) = 20 - i/N_r * 20;
-% end
-% B(1:100,1) = 10;
-% A(1:100,1) = 10;
-% M(1:100,1) = 0;
+N_IC = 500;
+B(:,1) = BMinODE * ones(N_r,1);
+A(:,1) = AMinODE * ones(N_r,1);
+M(:,1) = MMaxODE * ones(N_r,1);
+for i = 50:1:550
+   B(i,1) = BMaxODE;
+   A(i,1) = AMaxODE; 
+   M(i,1) = 0;
+   
+end
+
 %% DEFINE ddr matrices; implicitly have Neumann programmed in
 
 ddr = zeros(N_r,N_r);
