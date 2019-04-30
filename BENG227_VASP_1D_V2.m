@@ -29,17 +29,26 @@ E = 0.1;
 B0_c = 4;
 theta = 0.05;
 noise = 0.01;
-%% INITIAL CONDITIONS
-B = 0 * ones(N_r,N_t);
-A = 0 * ones(N_r,N_t);
-M = 0 * ones(N_r,N_t);
-V = 0 * ones(N_r,N_t);
+%% INITIAL CONDITIONS; refer to icy.m for usage
+BMaxODE = 8.80342361002194;
+BMinODE = 2.46024797933793;
+AMaxODE = 5.79255834170108;
+AMinODE = 2.26789894792708;
+MMaxODE = 2.69213920749395;
+MMinODE = 0.677418361848779;
+B = zeros(N_r,N_t);
+A = zeros(N_r,N_t);
+M = zeros(N_r,N_t);
+V = zeros(N_r,N_t);
 
-% Gradient I.C.
-for i = 1:1:N_r
-   B(i,1) = 20 - i/N_r * 20;
-   A(i,1) = 20 - i/N_r * 20;
-end
+B(:,1) = BMinODE * rand(N_r,1);
+A(:,1) = AMaxODE * rand(N_r,1);
+M(:,1) = MMaxODE * rand(N_r,1);
+% % Gradient I.C.
+% for i = 1:1:N_r
+%    B(i,1) = 20 - i/N_r * 20;
+%    A(i,1) = 20 - i/N_r * 20;
+% end
 % B(1:100,1) = 10;
 % A(1:100,1) = 10;
 % M(1:100,1) = 0;
@@ -117,20 +126,22 @@ for ii=[1:1:N_t]
 end
 cell(:,1)=zeros(size(dista,1),1);
 cell(:,2)=[1:size(dista,1)]';
-figure
-video1 = VideoWriter('lamellopodia','MPEG-4');
-open(video1);
-for frame=1:25:size(dista,2)
-%     cell(:,1)=cell(:,1)-sum(dista(:,frame:frame+24),2)/(dt*25);
-%     plot(cell(:,1),cell(:,2),'k-');
-    plot(dista(:,frame),cell(:,2),'k-')
-    title('Leading Edge of Cell Simulated Movement');
-    xlim([0 100]);
-    ylim([0 350]);
-    vidframe = getframe(gcf);
-    writeVideo(video1,vidframe);
-end
-close(video1);
+
+%% TOGGLE ON/OFF TO MAKE VIDEOS (TAKES AWHILE TO RUN)
+% figure
+% video1 = VideoWriter('lamellopodia','MPEG-4');
+% open(video1);
+% for frame=1:25:size(dista,2)
+% %     cell(:,1)=cell(:,1)-sum(dista(:,frame:frame+24),2)/(dt*25);
+% %     plot(cell(:,1),cell(:,2),'k-');
+%     plot(dista(:,frame),cell(:,2),'k-')
+%     title('Leading Edge of Cell Simulated Movement');
+%     xlim([0 100]);
+%     ylim([0 350]);
+%     vidframe = getframe(gcf);
+%     writeVideo(video1,vidframe);
+% end
+% close(video1);
 figure
 imagesc(V(:,1:N_t-1))
 xlabel('Time (10^{th} of a Second)');
