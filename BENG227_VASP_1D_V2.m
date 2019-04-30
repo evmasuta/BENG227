@@ -55,16 +55,20 @@ M(:,1) = zeros(N_r,1);
 
 
 % % Gradient I.C.
-N_IC = 500;
-B(:,1) = BMinODE * ones(N_r,1);
-A(:,1) = AMinODE * ones(N_r,1);
-M(:,1) = MMaxODE * ones(N_r,1);
-for i = 50:1:550
-   B(i,1) = BMaxODE;
-   A(i,1) = AMaxODE; 
-   M(i,1) = 0;
-   
+
+
+% B(:,1) = BMinODE * ones(N_r,1);
+% A(:,1) = AMinODE * ones(N_r,1);
+% M(:,1) = MMaxODE * ones(N_r,1);
+for i = 200:1:400
+   B(i,1) = BMinODE;
+   A(i,1) = AMinODE; 
+   M(i,1) = MMaxODE;
+
 end
+
+
+
 
 %% DEFINE ddr matrices; implicitly have Neumann programmed in
 
@@ -130,10 +134,11 @@ rad_coor = round(size(V_norm,1)/2);
 % figure
 % plot(tvec,B(10,:))
 
-% Movie of Moving Leading Edge
-dista=zeros(size(V_norm,1),1);
-% dista=([dista diff(V_norm,1,2)]);
-for ii=[1:1:N_t]
+
+%% TRACK DISTANCE AFTER 1st WAVE (ARTIFICIAL EFFECTS DUE TO I.C.'s)
+dista = zeros(size(V,1),N_t);
+toffset = 2000;
+for ii=[toffset:1:N_t]
     if ii > 1
         dista(:,ii) = dista(:,ii-1) + V_norm(:,ii-1) * dt;
     end
@@ -142,20 +147,20 @@ cell(:,1)=zeros(size(dista,1),1);
 cell(:,2)=[1:size(dista,1)]';
 
 %% TOGGLE ON/OFF TO MAKE VIDEOS (TAKES AWHILE TO RUN)
-% figure
-% video1 = VideoWriter('lamellopodia','MPEG-4');
-% open(video1);
-% for frame=1:25:size(dista,2)
-% %     cell(:,1)=cell(:,1)-sum(dista(:,frame:frame+24),2)/(dt*25);
-% %     plot(cell(:,1),cell(:,2),'k-');
-%     plot(dista(:,frame),cell(:,2),'k-')
-%     title('Leading Edge of Cell Simulated Movement');
-%     xlim([0 100]);
-%     ylim([0 350]);
-%     vidframe = getframe(gcf);
-%     writeVideo(video1,vidframe);
-% end
-% close(video1);
+figure
+video1 = VideoWriter('lamellopodia','MPEG-4');
+open(video1);
+for frame=1:25:size(dista,2)
+%     cell(:,1)=cell(:,1)-sum(dista(:,frame:frame+24),2)/(dt*25);
+%     plot(cell(:,1),cell(:,2),'k-');
+    plot(dista(:,frame),cell(:,2),'k-')
+    title('Leading Edge of Cell Simulated Movement');
+    xlim([0 100]);
+    ylim([0 N_r]);
+    vidframe = getframe(gcf);
+    writeVideo(video1,vidframe);
+end
+close(video1);
 figure
 imagesc(V(:,1:N_t-1))
 xlabel('Time (10^{th} of a Second)');
