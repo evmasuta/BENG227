@@ -6,3 +6,16 @@ AMinODE = 2.26789894792708
 
 MMaxODE = 2.69213920749395
 MMinODE = 0.677418361848779
+
+their pde run uses the following:
+A(1:589,1) = AMinODE
+A(589:600) = AMaxODE
+
+B(1:589,1) = BMinODE + Noise
+B(589:600,1) = roughly 0.9 * BMaxODE + Noise
+
+M(1:589,1) = MMaxODE
+M(589:600,1) = MMinODE
+
+R=0.14
+delta=0.8

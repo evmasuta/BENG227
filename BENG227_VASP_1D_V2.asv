@@ -35,23 +35,20 @@ BMinODE = 2.46024797933793;
 AMaxODE = 5.79255834170108;
 AMinODE = 2.26789894792708;
 MMaxODE = 2.69213920749395;
-MMinODE = 0.677418361848779;
+MMinODE = 1%0.677418361848779;
 B = noise * rand(N_r,N_t);
 A = zeros(N_r,N_t);
 M = zeros(N_r,N_t);
 V = zeros(N_r,N_t);
 
 % INITIAL CONDITIONS SENT BY AUTHORS
-% DON'T YOU DARE TOUCH THESE I.C.s FOR BAM OR I'LL BAM YOU.
-B(:,1) = BMaxODE * ones(N_r,1);
-A(:,1) = AMaxODE * ones(N_r,1);
-M(:,1) = zeros(N_r,1);
-
 N_IC = 589;
 % B(1:N_IC,1) = BMinODE * ones(N_IC,1);
 % A(1:N_IC,1) = AMinODE * ones(N_IC,1);
 % M(1:N_IC,1) = MMaxODE * ones(N_IC,1);
-
+B(:,1) = BMinODE * ones(N_r,1);
+A(:,1) = AMinODE * ones(N_r,1);
+M(:,1) = MMaxODE * ones(N_r,1);
 % A(N_IC:N_r,1) = AMaxODE;
 % B(N_IC:N_r,1) = 0.9 * BMaxODE + B(N_IC:N_r,1);
 % M(N_IC:N_r,1) = MMinODE;
@@ -100,7 +97,7 @@ for t=1:1:N_t - 1
     diffusion_B = epsilon^2 * ddr * gdBdx;
     accumulation_B = ones(N_r,1) + eta_B * V(:,t);
     loss_B = -B(:,t) ./ (G);
-    noise_B = noise * 2 * (rand(N_r,1) - ones(N_r,1));
+    noise_B = 0.1 * 2 * (rand(N_r,1) - ones(N_r,1));
     B(:,t+1) = B(:,t) + dt/epsilon * (diffusion_B + accumulation_B + loss_B + noise_B);
 
     %% CALCULATE A
