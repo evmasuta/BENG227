@@ -30,7 +30,7 @@ B0_c = 4;
 theta = 0.2;
 noise = 0.01;
 
-D_A = 1e-3;
+D_A = 0.01;
 %% INITIAL CONDITIONS; refer to icy.m for usage
 BMaxODE = 8.80342361002194;
 BMinODE = 2.46024797933793;
