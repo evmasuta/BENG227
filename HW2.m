@@ -46,13 +46,14 @@ for time=[0.1, 0.5, 1, 3]
           T(:,t + 1) = T(:,t) + (dt * mu * d2dx2 * T(:,t));
       end
    end
-   plot(xvec,T(:,N_t+1))
+   plot(xvec,T(:,N_t))
    
 end
 xlabel('Distance along Slab (ft)')
 ylabel('Temperature (F)')
 legend('0.1 hr','0.5 hr','1 hr','3 hr')
 title('Finite Difference Analysis')
+T_FTCS = T;
 %% 1c
 % Using T values from 1b, specifically over 3 hours...
 for t=2:1:N_t
@@ -64,7 +65,7 @@ figure
 semilogy(tvec,Erms)
 title("E_r_m_s")
 xlabel("Timestep")
-ylabel("RMS")
+ylabel("RMSE")
 %% 1f
 % 1 indexed, accoutn for phantom cells
 N_x = L / dx + 2;
@@ -103,14 +104,14 @@ for time=[0.1, 0.5, 1, 3]
           T(N_x,t + 1) = (2 * 500) - T(N_x-1,t + 1);
       end
    end
-   plot(xvec,T(:,N_t-2))
+   plot(xvec,T(:,N_t))
    
 end
 xlabel('Centroid Distance along Slab (ft)')
 ylabel('Temperature (F)')
 legend('0.1 hr','0.5 hr','1 hr','3 hr')
 title('Finite Volume Analysis')
-
+T_FVM = T;
 %% 1g
 
 %% 1h
@@ -124,7 +125,9 @@ figure
 semilogy(tvec,Erms_vol)
 title("E_r_m_s of Finite Volume")
 xlabel("Timestep")
-ylabel("RMS")
+ylabel("RMSE")
+ylim([1 100])
+grid on
 
 figure
 semilogy(tvec,Erms)
@@ -132,3 +135,6 @@ hold on
 semilogy(tvec, Erms_vol)
 legend('Finite Difference','Finite Volume')
 grid on
+title('Comparison of E_r_m_s')
+xlabel("Timestep")
+ylabel("RMSE")
