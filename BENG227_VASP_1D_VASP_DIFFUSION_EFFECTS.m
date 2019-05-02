@@ -468,3 +468,5 @@ plot(tvec,RMS)
 title('Velocity RMS error due to Diffusion')
 ylabel('Velocity RMS error Percent of Max')
 xlabel('Time (seconds)')
+grid on
+ylim([0 100])
