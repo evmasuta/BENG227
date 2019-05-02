@@ -10,62 +10,39 @@ dr = 0.1;
 dx = dr;
 dt = 0.01;
 % limits
-R_dim = 60; %microns
-T_dim = 400;
+R_dim = 40; %microns
+T_dim = 500;
 % N, +2 denotes phantom points to help with Neumann B.C.'s
 N_r = round(R_dim / dr) + 2;
 N_t = round(T_dim / dt);
 tvec = 1:1:N_t;
 %% CONSTANTS
-R = 0.14;
-delta = 0.8;
+R = 0.28;
+delta = 0.9;
 epsilon = 0.1;
 K = 1;
 eta_B = 1;
 % eta_M and eta_A not clearly labeled
 eta_M = 1;
-eta_A = 1;
+eta_A = 0.2;
 E = 0.1;
 B0_c = 4;
-theta = 0.2;
+theta = 0.05;
 noise = 0.01;
-%% INITIAL CONDITIONS; refer to icy.m for usage
-BMaxODE = 8.80342361002194;
-BMinODE = 2.46024797933793;
-AMaxODE = 5.79255834170108;
-AMinODE = 2.26789894792708;
-MMaxODE = 2.69213920749395;
-MMinODE = 0.677418361848779;
-B = noise * rand(N_r,N_t);
-A = zeros(N_r,N_t);
-M = zeros(N_r,N_t);
-V = zeros(N_r,N_t);
+%% INITIAL CONDITIONS
+B = 0 * ones(N_r,N_t);
+A = 0 * ones(N_r,N_t);
+M = 0 * ones(N_r,N_t);
+V = 0 * ones(N_r,N_t);
 
-% INITIAL CONDITIONS SENT BY AUTHORS
-% DON'T YOU DARE TOUCH THESE I.C.s FOR BAM OR I'LL BAM YOU.
-% SETS BASAL OSCILLATIONS, CAN OVERWRITE DOWNSTREAM
-B(:,1) = BMaxODE * ones(N_r,1);
-A(:,1) = AMaxODE * ones(N_r,1);
-M(:,1) = zeros(N_r,1);
-
-
-% B(1:N_IC,1) = BMinODE * ones(N_IC,1);
-% A(1:N_IC,1) = AMinODE * ones(N_IC,1);
-% M(1:N_IC,1) = MMaxODE * ones(N_IC,1);
-
-
-% % Gradient I.C.
-N_IC = 500;
-% B(:,1) = BMinODE * ones(N_r,1);
-% A(:,1) = AMinODE * ones(N_r,1);
-% M(:,1) = MMaxODE * ones(N_r,1);
-for i = 200:1:400
-   B(i,1) = BMinODE;
-   A(i,1) = AMinODE; 
-   M(i,1) = MMaxODE;
-   
+% Gradient I.C.
+for i = 1:1:N_r
+   B(i,1) = 20 - i/N_r * 20;
+   A(i,1) = 20 - i/N_r * 20;
 end
-
+% B(1:100,1) = 10;
+% A(1:100,1) = 10;
+% M(1:100,1) = 0;
 %% DEFINE ddr matrices; implicitly have Neumann programmed in
 
 ddr = zeros(N_r,N_r);
@@ -102,7 +79,7 @@ for t=1:1:N_t - 1
     diffusion_B = epsilon^2 * ddr * gdBdx;
     accumulation_B = ones(N_r,1) + eta_B * V(:,t);
     loss_B = -B(:,t) ./ (G);
-    noise_B = noise * 2 * (rand(N_r,1) - ones(N_r,1));
+    noise_B = 0.1 * 2 * (rand(N_r,1) - ones(N_r,1));
     B(:,t+1) = B(:,t) + dt/epsilon * (diffusion_B + accumulation_B + loss_B + noise_B);
 
     %% CALCULATE A
@@ -132,30 +109,18 @@ rad_coor = round(size(V_norm,1)/2);
 
 % Movie of Moving Leading Edge
 dista=zeros(size(V_norm,1),1);
-% dista=([dista diff(V_norm,1,2)]);
-for ii=[1:1:N_t]
-    if ii > 1
-        dista(:,ii) = dista(:,ii-1) + V_norm(:,ii-1) * dt;
-    end
-end
+dista=([dista diff(V_norm,1,2)]);
 cell(:,1)=zeros(size(dista,1),1);
 cell(:,2)=[1:size(dista,1)]';
-
-%% TOGGLE ON/OFF TO MAKE VIDEOS (TAKES AWHILE TO RUN)
 figure
-video1 = VideoWriter('lamellopodia','MPEG-4');
-open(video1);
 for frame=1:25:size(dista,2)
-%     cell(:,1)=cell(:,1)-sum(dista(:,frame:frame+24),2)/(dt*25);
-%     plot(cell(:,1),cell(:,2),'k-');
-    plot(dista(:,frame),cell(:,2),'k-')
+    cell(:,1)=cell(:,1)-sum(dista(:,frame:frame+24),2)/(dt*25);
+    pause(0.01);
+    plot(cell(:,1),cell(:,2),'k-');
     title('Leading Edge of Cell Simulated Movement');
-    xlim([0 100]);
-    ylim([0 N_r]);
-    vidframe = getframe(gcf);
-    writeVideo(video1,vidframe);
+    xlim([0 5]);
+    ylim([0 350]);
 end
-close(video1);
 figure
 imagesc(V(:,1:N_t-1))
 xlabel('Time (10^{th} of a Second)');
