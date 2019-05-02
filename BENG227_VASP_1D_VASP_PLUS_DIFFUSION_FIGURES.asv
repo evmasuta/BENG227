@@ -459,12 +459,9 @@ colorbar
 %% PLOT THE RMS
 for tstep=1:1:N_t
     divisor = 1 / (N_r - 2);
-    RMS(tstep) = divisor * sqrt(sum(V_difference(2:N_r-1,tstep).^2));
+    RMS(tstep) = divisor * sqrt(sum(V_difference(2:N_r-1).^2));
 end
-% Since Velocity Max = 1, scale to %
-RMS = RMS * 100;
 figure
 plot(tvec,RMS)
 title('Velocity RMS error due to Diffusion')
-ylabel('Velocity RMS error Percent of Max')
-xlabel('Time (seconds)')
+ylabel('Velocity RMS error') 
