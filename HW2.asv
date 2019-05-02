@@ -113,21 +113,15 @@ title('Finite Volume Analysis')
 %% 1g
 
 %% 1h
-% Using T values from 1f, specifically over 3 hours...
+%% 1c
+% Using T values from 1b, specifically over 3 hours...
 for t=2:1:N_t
     deltaT = T(2:N_x-1,t+1) - T(2:N_x-1,t);
-    Erms_vol(t-1,:) = 1/(N_x-2) * sqrt(sum(deltaT .^2));
+    Erms(t-1,:) = 1/(N_x-2) * sqrt(sum(deltaT .^2));
 end
 tvec = 1:1:N_t-1;
 figure
-plot(tvec,Erms_vol)
-title("E_r_m_s of Finite Volume")
+plot(tvec,Erms)
+title("E_r_m_s")
 xlabel("Timestep")
 ylabel("RMS")
-
-figure
-plot(tvec,Erms)
-hold on
-plot(tvec, Erms_vol)
-legend('Finite Difference','Finite Volume')
-grid on
