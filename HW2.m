@@ -61,7 +61,7 @@ for t=2:1:N_t
 end
 tvec = 1:1:N_t-1;
 figure
-plot(tvec,Erms)
+semilogy(tvec,Erms)
 title("E_r_m_s")
 xlabel("Timestep")
 ylabel("RMS")
@@ -76,18 +76,17 @@ T_init = zeros(N_x,1);
 d2dx2 = zeros(N_x,1);
 % Dirchlet B.C. also means 0 change at the boundary
 for i=2:1:N_x-1
-   d2dx2(i,i-1) = -1;
-   d2dx2(i,i) = 2;
-   d2dx2(i,i+1) = -1;
+   d2dx2(i,i-1) = 1;
+   d2dx2(i,i) = -2;
+   d2dx2(i,i+1) = 1;
 end
 % divide by step squared
 d2dx2 = d2dx2 ./ (dx^2);
-% set d2dx2 to negative because row dim is inverted relative to cartesian...
-d2dx2 = -d2dx2;
+
 figure
 hold on
 % Add R and L boundaries
-xvec = [-dx:dx:L];
+xvec = [-dx/2:dx:L+dx/2];
 for time=[0.1, 0.5, 1, 3]
    N_t = time/dt + 1;
    T = zeros(N_x,N_t);
@@ -96,13 +95,15 @@ for time=[0.1, 0.5, 1, 3]
       if t == 1
           T(:,t) = T_init;
       elseif t > 1
-          % Dirchlet B.C.
-          T(1,t) = -T(3,t);
+          T(1,t) = -T(2,t);
           T(N_x,t) = (2 * 500) - T(N_x-1,t);
           T(:,t + 1) = T(:,t) + (dt * mu * d2dx2 * T(:,t));
+%           Dirchlet B.C.
+          T(1,t + 1) = -T(2,t + 1);
+          T(N_x,t + 1) = (2 * 500) - T(N_x-1,t + 1);
       end
    end
-   plot(xvec,T(:,N_t+1))
+   plot(xvec,T(:,N_t-2))
    
 end
 xlabel('Centroid Distance along Slab (ft)')
@@ -120,14 +121,14 @@ for t=2:1:N_t
 end
 tvec = 1:1:N_t-1;
 figure
-plot(tvec,Erms_vol)
+semilogy(tvec,Erms_vol)
 title("E_r_m_s of Finite Volume")
 xlabel("Timestep")
 ylabel("RMS")
 
 figure
-plot(tvec,Erms)
+semilogy(tvec,Erms)
 hold on
-plot(tvec, Erms_vol)
+semilogy(tvec, Erms_vol)
 legend('Finite Difference','Finite Volume')
 grid on

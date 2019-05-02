@@ -11,7 +11,7 @@ dx = dr;
 dt = 0.1;
 % limits; small size for replicating figures
 R_dim = 40; %microns
-T_dim = 500;
+T_dim = 1000/5;
 % N, +2 denotes phantom points to help with Neumann B.C.'s
 N_r = round(R_dim / dr) + 2;
 N_t = round(T_dim / dt);
@@ -181,7 +181,7 @@ for R = R_iter
             plot(tvec,V_norm(rad_coor,1:N_t-1),tvec,B_norm(rad_coor,1:N_t-1),...
                 tvec,A_norm(rad_coor,1:N_t-1),tvec,M_norm(rad_coor,1:N_t-1),'LineWidth',3)
             legend('V','B','A','M');
-            xlabel('Time (10^{th} of a Second)');
+            xlabel('Time (Seconds)');
             ylabel('Normalized Quantity');
             ylim([0 1.1])
             grid on

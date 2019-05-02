@@ -28,7 +28,7 @@ eta_A = 1;
 E = 0.1;
 B0_c = 4;
 theta = 0.2;
-noise = 0.01;
+noise = 0.00;
 % Additional diffusion term for VASP; define based on epsilon2 =
 % D_A/cell_l^2/gamma
 % VASP estimated diffusivity
@@ -44,7 +44,7 @@ AMaxODE = 5.79255834170108;
 AMinODE = 2.26789894792708;
 MMaxODE = 2.69213920749395;
 MMinODE = 0.677418361848779;
-B = noise * rand(N_r,N_t);
+B = ones(N_r,N_t);
 A = zeros(N_r,N_t);
 M = zeros(N_r,N_t);
 V = zeros(N_r,N_t);
@@ -233,7 +233,7 @@ dx = dr;
 dt = 0.1;
 % limits; small size for replicating figures
 R_dim = 40; %microns
-T_dim = 1000;
+T_dim = 1400;
 % N, +2 denotes phantom points to help with Neumann B.C.'s
 N_r = round(R_dim / dr) + 2;
 N_t = round(T_dim / dt);

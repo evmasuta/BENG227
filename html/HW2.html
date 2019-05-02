@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>BENG 227 HW #2</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-05-01"><meta name="DC.source" content="HW2.m"><style type="text/css">
+      --><title>BENG 227 HW #2</title><meta name="generator" content="MATLAB 9.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-05-02"><meta name="DC.source" content="HW2.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -123,7 +123,7 @@ title(<span class="string">'Finite Difference Analysis'</span>)
 <span class="keyword">end</span>
 tvec = 1:1:N_t-1;
 figure
-plot(tvec,Erms)
+semilogy(tvec,Erms)
 title(<span class="string">"E_r_m_s"</span>)
 xlabel(<span class="string">"Timestep"</span>)
 ylabel(<span class="string">"RMS"</span>)
@@ -136,18 +136,17 @@ T_init = zeros(N_x,1);
 d2dx2 = zeros(N_x,1);
 <span class="comment">% Dirchlet B.C. also means 0 change at the boundary</span>
 <span class="keyword">for</span> i=2:1:N_x-1
-   d2dx2(i,i-1) = -1;
-   d2dx2(i,i) = 2;
-   d2dx2(i,i+1) = -1;
+   d2dx2(i,i-1) = 1;
+   d2dx2(i,i) = -2;
+   d2dx2(i,i+1) = 1;
 <span class="keyword">end</span>
 <span class="comment">% divide by step squared</span>
 d2dx2 = d2dx2 ./ (dx^2);
-<span class="comment">% set d2dx2 to negative because row dim is inverted relative to cartesian...</span>
-d2dx2 = -d2dx2;
+
 figure
 hold <span class="string">on</span>
 <span class="comment">% Add R and L boundaries</span>
-xvec = [-dx:dx:L];
+xvec = [-dx/2:dx:L+dx/2];
 <span class="keyword">for</span> time=[0.1, 0.5, 1, 3]
    N_t = time/dt + 1;
    T = zeros(N_x,N_t);
@@ -156,13 +155,15 @@ xvec = [-dx:dx:L];
       <span class="keyword">if</span> t == 1
           T(:,t) = T_init;
       <span class="keyword">elseif</span> t &gt; 1
-          <span class="comment">% Dirchlet B.C.</span>
-          T(1,t) = -T(3,t);
+          T(1,t) = -T(2,t);
           T(N_x,t) = (2 * 500) - T(N_x-1,t);
           T(:,t + 1) = T(:,t) + (dt * mu * d2dx2 * T(:,t));
+<span class="comment">%           Dirchlet B.C.</span>
+          T(1,t + 1) = -T(2,t + 1);
+          T(N_x,t + 1) = (2 * 500) - T(N_x-1,t + 1);
       <span class="keyword">end</span>
    <span class="keyword">end</span>
-   plot(xvec,T(:,N_t+1))
+   plot(xvec,T(:,N_t-2))
 
 <span class="keyword">end</span>
 xlabel(<span class="string">'Centroid Distance along Slab (ft)'</span>)
@@ -175,15 +176,15 @@ title(<span class="string">'Finite Volume Analysis'</span>)
 <span class="keyword">end</span>
 tvec = 1:1:N_t-1;
 figure
-plot(tvec,Erms_vol)
+semilogy(tvec,Erms_vol)
 title(<span class="string">"E_r_m_s of Finite Volume"</span>)
 xlabel(<span class="string">"Timestep"</span>)
 ylabel(<span class="string">"RMS"</span>)
 
 figure
-plot(tvec,Erms)
+semilogy(tvec,Erms)
 hold <span class="string">on</span>
-plot(tvec, Erms_vol)
+semilogy(tvec, Erms_vol)
 legend(<span class="string">'Finite Difference'</span>,<span class="string">'Finite Volume'</span>)
 grid <span class="string">on</span>
 </pre><img vspace="5" hspace="5" src="HW2_04.png" alt=""> <img vspace="5" hspace="5" src="HW2_05.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2019a</a><br></p></div><!--
@@ -251,7 +252,7 @@ for t=2:1:N_t
 end
 tvec = 1:1:N_t-1;
 figure
-plot(tvec,Erms)
+semilogy(tvec,Erms)
 title("E_r_m_s")
 xlabel("Timestep")
 ylabel("RMS")
@@ -266,18 +267,17 @@ T_init = zeros(N_x,1);
 d2dx2 = zeros(N_x,1);
 % Dirchlet B.C. also means 0 change at the boundary
 for i=2:1:N_x-1
-   d2dx2(i,i-1) = -1;
-   d2dx2(i,i) = 2;
-   d2dx2(i,i+1) = -1;
+   d2dx2(i,i-1) = 1;
+   d2dx2(i,i) = -2;
+   d2dx2(i,i+1) = 1;
 end
 % divide by step squared
 d2dx2 = d2dx2 ./ (dx^2);
-% set d2dx2 to negative because row dim is inverted relative to cartesian...
-d2dx2 = -d2dx2;
+
 figure
 hold on
 % Add R and L boundaries
-xvec = [-dx:dx:L];
+xvec = [-dx/2:dx:L+dx/2];
 for time=[0.1, 0.5, 1, 3]
    N_t = time/dt + 1;
    T = zeros(N_x,N_t);
@@ -286,13 +286,15 @@ for time=[0.1, 0.5, 1, 3]
       if t == 1
           T(:,t) = T_init;
       elseif t > 1
-          % Dirchlet B.C.
-          T(1,t) = -T(3,t);
+          T(1,t) = -T(2,t);
           T(N_x,t) = (2 * 500) - T(N_x-1,t);
           T(:,t + 1) = T(:,t) + (dt * mu * d2dx2 * T(:,t));
+%           Dirchlet B.C.
+          T(1,t + 1) = -T(2,t + 1);
+          T(N_x,t + 1) = (2 * 500) - T(N_x-1,t + 1);
       end
    end
-   plot(xvec,T(:,N_t+1))
+   plot(xvec,T(:,N_t-2))
    
 end
 xlabel('Centroid Distance along Slab (ft)')
@@ -310,15 +312,15 @@ for t=2:1:N_t
 end
 tvec = 1:1:N_t-1;
 figure
-plot(tvec,Erms_vol)
+semilogy(tvec,Erms_vol)
 title("E_r_m_s of Finite Volume")
 xlabel("Timestep")
 ylabel("RMS")
 
 figure
-plot(tvec,Erms)
+semilogy(tvec,Erms)
 hold on
-plot(tvec, Erms_vol)
+semilogy(tvec, Erms_vol)
 legend('Finite Difference','Finite Volume')
 grid on
 ##### SOURCE END #####
