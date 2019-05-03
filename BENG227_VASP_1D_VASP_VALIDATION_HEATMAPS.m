@@ -1,4 +1,5 @@
 %% BENG 227 MIDTERM PROJECT Evan Masutani
+% GENERATES VELOCITY HEATMAPS TO COMPARE WITH ORIGINAL MODEL
 %% HOUSEKEEPING
 clear all;
 close all;
@@ -22,7 +23,6 @@ delta = 0.8;
 epsilon = 0.1;
 K = 1;
 eta_B = 1;
-% eta_M and eta_A not clearly labeled
 eta_M = 1;
 eta_A = 1;
 E = 0.1;
@@ -44,7 +44,7 @@ M = zeros(N_r,N_t);
 V = zeros(N_r,N_t);
 
 % INITIAL CONDITIONS SENT BY AUTHORS
-% DON'T YOU DARE TOUCH THESE I.C.s FOR BAM OR I'LL BAM YOU.
+
 % SETS BASAL OSCILLATIONS, CAN OVERWRITE DOWNSTREAM
 B(:,1) = BMaxODE * ones(N_r,1);
 A(:,1) = AMaxODE * ones(N_r,1);
@@ -81,8 +81,7 @@ for R = R_iter
         M = zeros(N_r,N_t);
         V = zeros(N_r,N_t);
         % INITIAL CONDITIONS SENT BY AUTHORS
-        % DON'T YOU DARE TOUCH THESE I.C.s FOR BAM OR I'LL BAM YOU.
-        % SETS BASAL OSCILLATIONS, CAN OVERWRITE DOWNSTREAM
+
         B(:,1) = BMaxODE * ones(N_r,1);
         A(:,1) = AMaxODE * ones(N_r,1);
         M(:,1) = zeros(N_r,1);
@@ -99,13 +98,11 @@ for R = R_iter
                     V(vstep,t) = 0;
                 end
             end
-            % G is kinda weird, consider changing if fails
             G = ones(N_r,1) + (A(:,t) .* B(:,t)) ./ (ones(N_r,1) + M(:,t) + K * B(:,t));
             %% CALCULATE B
             % No flux BC
             B(1,t) = B(3,t);
             B(N_r,t) = B(N_r - 2,t);
-            % No need to transpose since natively row vector
             dBdx = ddr * B(:,t);
             gdBdx = 1./G .* dBdx;
             diffusion_B = epsilon^2 * ddr * gdBdx;
@@ -127,6 +124,8 @@ for R = R_iter
             loss_M = -1 * (ones(N_r,1) * theta + eta_M * V(:,t)) .* M(:,t);
             M(:,t+1) = M(:,t) + dt * (accumulation_M + loss_M);
         end
+        
+        %% NORMALIZATION OF VARIABLES
         V_avg = mean(mean(V));
         V_avg_plot(R_ct,delta_ct) = V_avg;
         V_avg_plot_d(R_ct,delta_ct) = delta;
@@ -200,7 +199,7 @@ for R = R_iter
     
 end
 
-%% Plot heatmap resembling figure 6
+%% Plot heatmap resembling figure 6 of Barnhart et al.
 % Flip plot up down to pictographically mirror the figure
 V_avg_plot = flipud(V_avg_plot);
 V_avg_plot_d = flipud(V_avg_plot_d);
